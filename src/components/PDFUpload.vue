@@ -17,7 +17,7 @@
 
 <script setup lang="ts">
 import axios from 'axios';
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 
 type GradeConversion = {
     A: number;
@@ -44,6 +44,12 @@ const usGradeConversionScale: GradeConversion = {
 const usGrade = ref<number>(0);
 const totalScore = ref<number>(0);
 const totalCredits = ref<number>(0);
+const temp = ref({})
+
+onMounted(async () => {
+  temp.value = await axios.post('https://cg-converter-backend.netlify.app/');
+})
+
 async function handleFileUpload(event: any) {
   const file = (event.target as HTMLInputElement).files?.[0];
     
