@@ -1,6 +1,6 @@
 <template>
   <div class="w-full flex flex-col text-2xl relative min-h-16 rounded">
-    <div class="w-full my-auto">
+    <div class="w-full my-auto flex items-center relative">
       <input 
         class="opacity-0 absolute"
         type="file"
@@ -15,7 +15,7 @@
       </label>
     </div>
     <div v-if="loading" class="mt-4 flex flex-row items-center">
-      <span class="mr-7 text-gray-400">Calculating CG</span>
+      <span class="mr-7 text-gray-400">Calculating GPA</span>
       <div class="snippet" data-title="dot-pulse">
           <div class="stage">
             <div class="dot-pulse"></div>
@@ -23,15 +23,24 @@
         </div>
     </div>
     <div v-else-if="usGrade" class="flex flex-col">
-      <span class="text-gray-400 mt-4">
-        Changed CG: {{ usGrade }}
-      </span>
-      <span class="text-gray-400">
-        Total Credit Score: {{ totalScore }}
-      </span>
-      <span class="text-gray-400">
-        Total Credits: {{ totalCredits }}
-      </span>
+      <div class="flex justify-between mt-4">
+        <span class="text-gray-400">
+          GPA in US Grade Points (out of 4):
+        </span>
+        <span>{{ usGrade }}</span>
+      </div>
+      <div class="flex justify-between mt-4">
+        <span class="text-gray-400">
+          Total Credit Score (Numerator):
+        </span>
+        <span>{{ totalScore }}</span>
+      </div>
+      <div class="flex justify-between mt-4">
+        <span class="text-gray-400">
+          Total Credits (Denominator):
+        </span>
+        <span>{{ totalCredits }}</span>
+      </div>
     </div>
     <div v-else-if="error" class="mt-4">
       Not able to read the pdf <br>
@@ -71,6 +80,7 @@ const totalScore = ref<number>(0);
 const totalCredits = ref<number>(0);
 const error = ref(false)
 const loading = ref(false);
+const iconHovered = ref(false);
 
 async function handleFileUpload(event: any) {
   const file = (event.target as HTMLInputElement).files?.[0];
@@ -185,7 +195,7 @@ function calculateUSSystemGrade(courseCreditPoints: string[], courseGradePoints:
     totalCreditCount -= (courseGradePoints[indexOfRepeatedCourse] * usGradeConversionScale[courseCreditPoints[indexOfRepeatedCourse]]);
     totalGradeCount -= courseGradePoints[indexOfRepeatedCourse];
   })
-  usGrade.value = Math.round((totalCreditCount/totalGradeCount) * 1000) / 1000;
+  usGrade.value = Math.round((totalCreditCount/totalGradeCount) * 100) / 100;
 
   totalScore.value = totalCreditCount;
   totalCredits.value = totalGradeCount;
