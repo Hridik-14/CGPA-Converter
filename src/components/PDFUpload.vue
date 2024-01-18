@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full flex flex-col text-2xl relative min-h-16 rounded">
+  <div class="w-full flex flex-col md:text-2xl text-sm relative min-h-16 rounded">
     <div class="w-full my-auto flex items-center relative">
       <input 
         class="opacity-0 absolute"
@@ -8,7 +8,7 @@
         @change="handleFileUpload"
       >
       <label 
-        class="flex text-lg justify-center items-center w-full h-12 bg-gray-200 text-gray-700 font-semibold transition duration-300 ease-in-out transform hover:-translate-y-1 rounded cursor-pointer mt-1"
+        class="flex md:text-lg md:p-0 px-2 text-sm justify-center items-center w-full h-12 bg-gray-200 text-gray-700 font-semibold transition duration-300 ease-in-out transform hover:-translate-y-1 rounded cursor-pointer mt-1"
         for="file"
       >
         Upload Performance Sheet
