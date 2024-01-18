@@ -47,7 +47,7 @@ const totalCredits = ref<number>(0);
 const temp = ref({})
 
 onMounted(async () => {
-  temp.value = await axios.get('https://cg-converter-backend.netlify.app/');
+  temp.value = await axios.get('https://cg-converter-backend.netlify.app/.netlify/functions/api');
 })
 
 async function handleFileUpload(event: any) {
@@ -58,7 +58,7 @@ async function handleFileUpload(event: any) {
       const formData = new FormData();
       formData.append('pdfFile', file)
       
-      const response = await axios.post('https://cg-converter-backend.netlify.app/extract-text', formData);
+      const response = await axios.post('https://cg-converter-backend.netlify.app/.netlify/functions/api/extract-text', formData);
       const pdfText = response.data.trim();
       const lines = pdfText.split('\n');
       const courseCodes: string[] = [];
