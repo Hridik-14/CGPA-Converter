@@ -47,7 +47,7 @@ const totalCredits = ref<number>(0);
 const temp = ref({})
 
 onMounted(async () => {
-  temp.value = await axios.post('https://cg-converter-backend.netlify.app/');
+  temp.value = await axios.get('https://cg-converter-backend.netlify.app/');
 })
 
 async function handleFileUpload(event: any) {
