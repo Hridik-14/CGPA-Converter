@@ -1,7 +1,28 @@
 <template>
-  <div class="w-full flex flex-col text-2xl">
-    <input type="file" @change="handleFileUpload" accept=".pdf" class="text-lg" />
-    <div v-if="usGrade" class="flex flex-col">
+  <div class="w-full flex flex-col text-2xl relative min-h-16 rounded">
+    <div class="w-full my-auto">
+      <input 
+        class="opacity-0 absolute"
+        type="file"
+        id="file" 
+        @change="handleFileUpload"
+      >
+      <label 
+        class="flex text-lg justify-center items-center w-full h-12 bg-gray-200 text-gray-700 font-semibold transition duration-300 ease-in-out transform hover:-translate-y-1 rounded cursor-pointer mt-2"
+        for="file"
+      >
+        Upload Performance Sheet
+      </label>
+    </div>
+    <div v-if="loading" class="mt-4 flex flex-row items-center">
+      <span class="mr-7 text-gray-400">Calculating CG</span>
+      <div class="snippet" data-title="dot-pulse">
+          <div class="stage">
+            <div class="dot-pulse"></div>
+          </div>
+        </div>
+    </div>
+    <div v-else-if="usGrade" class="flex flex-col">
       <span class="text-gray-400 mt-4">
         Changed CG: {{ usGrade }}
       </span>
@@ -12,12 +33,16 @@
         Total Credits: {{ totalCredits }}
       </span>
     </div>
+    <div v-else-if="error" class="mt-4">
+      Not able to read the pdf <br>
+      Please check the file
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import axios from 'axios';
-import { ref, onMounted } from 'vue';
+import { ref } from 'vue';
 
 type GradeConversion = {
     A: number;
@@ -44,14 +69,13 @@ const usGradeConversionScale: GradeConversion = {
 const usGrade = ref<number>(0);
 const totalScore = ref<number>(0);
 const totalCredits = ref<number>(0);
-const temp = ref({})
-
-onMounted(async () => {
-  temp.value = await axios.get('https://cg-converter-backend.netlify.app/.netlify/functions/api');
-})
+const error = ref(false)
+const loading = ref(false);
 
 async function handleFileUpload(event: any) {
   const file = (event.target as HTMLInputElement).files?.[0];
+
+  loading.value = true;
     
   if (file && file.type === 'application/pdf') {
     try {
@@ -60,6 +84,10 @@ async function handleFileUpload(event: any) {
       
       const response = await axios.post('https://cg-converter-backend.netlify.app/.netlify/functions/api/extract-text', formData);
       const pdfText = response.data.trim();
+      if (!pdfText.trim()) {
+        error.value = true;
+      }
+      
       const lines = pdfText.split('\n');
       const courseCodes: string[] = [];
       const courseGradePoints: number[] = [];
@@ -110,6 +138,8 @@ async function handleFileUpload(event: any) {
   } else {
     console.error('Invalid file type. Please select a PDF file.');
   }
+
+  loading.value = false;
 }
 
 function calculateUSSystemGrade(courseCreditPoints: string[], courseGradePoints: number[], repeatedCourses: string[], courseCodes: string[]) {
@@ -161,3 +191,72 @@ function calculateUSSystemGrade(courseCreditPoints: string[], courseGradePoints:
   totalCredits.value = totalGradeCount;
 }
 </script>
+<style scoped>
+.dot-pulse {
+  position: relative;
+  left: -9999px;
+  width: 10px;
+  height: 10px;
+  border-radius: 5px;
+  background-color: rgb(156 163 175);
+  color: rgb(156 163 175);
+  box-shadow: 9999px 0 0 -5px;
+  animation: dot-pulse 1.5s infinite linear;
+  animation-delay: 0.25s;
+}
+.dot-pulse::before, .dot-pulse::after {
+  content: "";
+  display: inline-block;
+  position: absolute;
+  top: 0;
+  width: 10px;
+  height: 10px;
+  border-radius: 5px;
+  background-color: rgb(156 163 175);
+  color: rgb(156 163 175);
+}
+.dot-pulse::before {
+  box-shadow: 9984px 0 0 -5px;
+  animation: dot-pulse-before 1.5s infinite linear;
+  animation-delay: 0s;
+}
+.dot-pulse::after {
+  box-shadow: 10014px 0 0 -5px;
+  animation: dot-pulse-after 1.5s infinite linear;
+  animation-delay: 0.5s;
+}
+
+@keyframes dot-pulse-before {
+  0% {
+    box-shadow: 9984px 0 0 -5px;
+  }
+  30% {
+    box-shadow: 9984px 0 0 2px;
+  }
+  60%, 100% {
+    box-shadow: 9984px 0 0 -5px;
+  }
+}
+@keyframes dot-pulse {
+  0% {
+    box-shadow: 9999px 0 0 -5px;
+  }
+  30% {
+    box-shadow: 9999px 0 0 2px;
+  }
+  60%, 100% {
+    box-shadow: 9999px 0 0 -5px;
+  }
+}
+@keyframes dot-pulse-after {
+  0% {
+    box-shadow: 10014px 0 0 -5px;
+  }
+  30% {
+    box-shadow: 10014px 0 0 2px;
+  }
+  60%, 100% {
+    box-shadow: 10014px 0 0 -5px;
+  }
+}
+</style>
