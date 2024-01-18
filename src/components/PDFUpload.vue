@@ -52,7 +52,7 @@ async function handleFileUpload(event: any) {
       const formData = new FormData();
       formData.append('pdfFile', file)
       
-      const response = await axios.post('http://localhost:4000/extract-text', formData);
+      const response = await axios.post('https://cg-converter-backend.netlify.app/extract-text', formData);
       const pdfText = response.data.trim();
       const lines = pdfText.split('\n');
       const courseCodes: string[] = [];
