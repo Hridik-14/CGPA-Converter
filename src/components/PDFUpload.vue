@@ -91,6 +91,8 @@ const pdfBody: RowInput[] = [];
 async function handleFileUpload(event: any) {
   const file = (event.target as HTMLInputElement).files?.[0];
 
+  pdfBody.splice(0, pdfBody.length);
+
   loading.value = true;
     
   if (file && file.type === 'application/pdf') {
@@ -120,8 +122,19 @@ async function handleFileUpload(event: any) {
         }
         
         if (isNotPending) {
+          if (line.trim().includes('BITS  F221')) {
+            courseCodes.push('BITS F221');
+            courseGradePoints.push(5);
+            courseCreditPoints.push(line.trim().split(' ')[7]);            
+            courseType.push('NR');
+          }
           if (course) {
-            courseCodes.push(course[0].trim());
+            if(course[0].includes('BITS  F221')) {
+              courseCodes.push(course[0].split('BITS  F221 PRACTICE SCHOOL I 5 A')[1].trim());
+            }
+            else {
+              courseCodes.push(course[0].trim());              
+            }
           } else if(parseFloat(line.trim()) <= 20 && parseFloat(line.trim()) > 0 && Number.isInteger(parseFloat(line.trim())) && courseCodes.length > courseGradePoints.length) {
             courseGradePoints.push(parseInt(line.trim()));
             
@@ -136,12 +149,6 @@ async function handleFileUpload(event: any) {
             if(line.trim() === 'R') {
               repeatedCourses.push(courseCodes[courseType.length - 1]);
             }
-          }
-          if (line.trim().includes('BITS  F221')) {
-            courseCodes.push('BITS F221');
-            courseGradePoints.push(5);
-            courseCreditPoints.push(line.trim().split(' ')[7]);            
-            courseType.push('NR');
           }
         }
       }); 
@@ -279,7 +286,9 @@ function handleDownload() {
     body: pdfBody,
   });
 
-  doc.save('Report.pdf')
+  doc.save('Report.pdf');
+
+  pdfBody.splice(0, pdfBody.length) 
 }
 
 </script>
