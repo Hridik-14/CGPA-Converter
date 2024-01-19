@@ -31,16 +31,19 @@
       </div>
       <div class="flex justify-between mt-4">
         <span class="text-gray-400">
-          Total Credit Score (Numerator):
+          Total Credit Score:
         </span>
         <span>{{ totalScore }}</span>
       </div>
       <div class="flex justify-between mt-4">
         <span class="text-gray-400">
-          Total Credits (Denominator):
+          Total Credits:
         </span>
         <span>{{ totalCredits }}</span>
       </div>
+      <button class="flex md:text-lg md:p-0 px-2 text-xs justify-center items-center w-full h-12 bg-gray-200 text-gray-700 font-semibold transition duration-300 ease-in-out transform hover:-translate-y-1 rounded cursor-pointer mt-4" @click="handleDownload" >
+        Download Report
+      </button>
     </div>
     <div v-else-if="error" class="mt-4">
       Not able to read the pdf <br>
@@ -52,6 +55,9 @@
 <script setup lang="ts">
 import axios from 'axios';
 import { ref } from 'vue';
+
+import jsPDF from 'jspdf'
+import autoTable, { type RowInput, Row } from 'jspdf-autotable'
 
 type GradeConversion = {
     A: number;
@@ -80,7 +86,7 @@ const totalScore = ref<number>(0);
 const totalCredits = ref<number>(0);
 const error = ref(false)
 const loading = ref(false);
-const iconHovered = ref(false);
+const pdfBody: RowInput[] = [];
 
 async function handleFileUpload(event: any) {
   const file = (event.target as HTMLInputElement).files?.[0];
@@ -156,35 +162,92 @@ function calculateUSSystemGrade(courseCreditPoints: string[], courseGradePoints:
   let totalCreditCount: number = 0;
   let totalGradeCount = 0;
   courseCreditPoints.forEach((grade: string, index: number) => {
+    const courseDetails = [];
     switch (grade) {
       case 'A':
         totalCreditCount += courseGradePoints[index] * 4;
         totalGradeCount += courseGradePoints[index];
+        courseDetails.push(courseCodes[index]);
+        courseDetails.push(courseGradePoints[index].toString());
+        courseDetails.push(grade);
+        courseDetails.push('4');
+        pdfBody.push(courseDetails)
         break;
       case 'A-':
         totalCreditCount += courseGradePoints[index] * 4;
         totalGradeCount += courseGradePoints[index];
-        break
+        courseDetails.push(courseCodes[index]);
+        courseDetails.push(courseGradePoints[index].toString());
+        courseDetails.push(grade);
+        courseDetails.push('4');
+        pdfBody.push(courseDetails)
+        break;
       case 'B':
         totalCreditCount += courseGradePoints[index] * 3.5;
         totalGradeCount += courseGradePoints[index];
-        break
+        courseDetails.push(courseCodes[index]);
+        courseDetails.push(courseGradePoints[index].toString());
+        courseDetails.push(grade);
+        courseDetails.push('3.5');
+        pdfBody.push(courseDetails)
+        break;
       case 'B-':
         totalCreditCount += courseGradePoints[index] * 3;
         totalGradeCount += courseGradePoints[index];
+        courseDetails.push(courseCodes[index]);
+        courseDetails.push(courseGradePoints[index].toString());
+        courseDetails.push(grade);
+        courseDetails.push('3');
+        pdfBody.push(courseDetails)
         break;
       case 'C':
         totalCreditCount += courseGradePoints[index] * 2.5;
         totalGradeCount += courseGradePoints[index];
+        courseDetails.push(courseCodes[index]);
+        courseDetails.push(courseGradePoints[index].toString());
+        courseDetails.push(grade);
+        courseDetails.push('2.5');
+        pdfBody.push(courseDetails)
         break;
       case 'C-':
         totalCreditCount += courseGradePoints[index] * 2;
         totalGradeCount += courseGradePoints[index];
-        break
+        courseDetails.push(courseCodes[index]);
+        courseDetails.push(courseGradePoints[index].toString());
+        courseDetails.push(grade);
+        courseDetails.push('2');
+        pdfBody.push(courseDetails)
+        break;
       case 'D':
         totalCreditCount += courseGradePoints[index] * 2;
         totalGradeCount += courseGradePoints[index];
+        courseDetails.push(courseCodes[index]);
+        courseDetails.push(courseGradePoints[index].toString());
+        courseDetails.push(grade);
+        courseDetails.push('2');
+        pdfBody.push(courseDetails)
         break;
+      case 'CLR':
+        courseDetails.push(courseCodes[index]);
+        courseDetails.push(courseGradePoints[index].toString());
+        courseDetails.push(grade);
+        courseDetails.push('PASS');
+        pdfBody.push(courseDetails)
+        break;
+      case 'GD':
+        courseDetails.push(courseCodes[index]);
+        courseDetails.push(courseGradePoints[index].toString());
+        courseDetails.push(grade);
+        courseDetails.push('PASS');
+        pdfBody.push(courseDetails)
+        break;
+      case 'BD':
+        courseDetails.push(courseCodes[index]);
+        courseDetails.push(courseGradePoints[index].toString());
+        courseDetails.push(grade);
+        courseDetails.push('FAIL');
+        pdfBody.push(courseDetails)
+        break
       default:
         break;
     }
@@ -200,7 +263,27 @@ function calculateUSSystemGrade(courseCreditPoints: string[], courseGradePoints:
   totalScore.value = totalCreditCount;
   totalCredits.value = totalGradeCount;
 }
+
+function handleDownload() {
+  const doc = new jsPDF()
+
+  // It can parse html:
+  // <table id="my-table"><!-- ... --></table>
+  doc.text(`Cumulative GPA: ${usGrade.value}`, 14, 10)
+
+  autoTable(doc, { html: '#my-table' })
+
+  // Or use javascript directly:
+  autoTable(doc, {
+    head: [['Course Code', 'Credits', 'Grade', 'Grade Points']],
+    body: pdfBody,
+  });
+
+  doc.save('Report.pdf')
+}
+
 </script>
+
 <style scoped>
 .dot-pulse {
   position: relative;

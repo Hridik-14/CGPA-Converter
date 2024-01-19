@@ -26,6 +26,8 @@
     "cors": "^2.8.5",
     "express": "^4.18.2",
     "express-fileupload": "^1.4.3",
+    "jspdf": "^2.5.1",
+    "jspdf-autotable": "^3.8.1",
     "pdf-parse": "^1.1.1",
     "pdfjs-dist": "^4.0.379",
     "pinia": "^2.1.7",
