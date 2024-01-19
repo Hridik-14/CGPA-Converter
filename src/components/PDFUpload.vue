@@ -8,7 +8,7 @@
         @change="handleFileUpload"
       >
       <label 
-        class="flex md:text-lg md:p-0 px-2 text-sm justify-center items-center w-full h-12 bg-gray-200 text-gray-700 font-semibold transition duration-300 ease-in-out transform hover:-translate-y-1 rounded cursor-pointer mt-1"
+        class="flex md:text-lg md:p-0 px-2 text-xs justify-center items-center w-full h-12 bg-gray-200 text-gray-700 font-semibold transition duration-300 ease-in-out transform hover:-translate-y-1 rounded cursor-pointer mt-1"
         for="file"
       >
         Upload Performance Sheet

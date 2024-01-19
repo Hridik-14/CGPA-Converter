@@ -3,10 +3,10 @@ import PDFUpload from '@/components/PDFUpload.vue';
 </script>
 
 <template>
-  <div class="absolute md:top-20 top-5 md:left-[33%] left-1/4 md:text-5xl text-xl">
+  <div class="absolute md:top-20 top-5 left-1/2 -translate-x-1/2 md:text-4xl text-lg">
     BITS 2 US GPA Converter
   </div>
-  <div class="flex flex-col md:min-w-[530px] max-w-max mx-auto border border-gray-300 rounded p-4 shadow custom-right-shadow md:mt-0 mt-10">
+  <div class="flex flex-col md:min-w-[530px] max-w-max mx-auto border border-gray-300 rounded md:p-4 px-4 py-2 shadow custom-right-shadow">
     <PDFUpload />
   </div>  
 </template>
