@@ -67,6 +67,7 @@ type GradeConversion = {
     C: number;
     'C-': number;
     D: number;
+    E: number;
     [key: string]: number;
 };
 
@@ -78,7 +79,8 @@ const usGradeConversionScale: GradeConversion = {
   'B-': 3,
   'C': 2.5,
   'C-': 2,
-  'D': 2
+  'D': 2,
+  'E': 0,
 }
 
 const usGrade = ref<number>(0);
@@ -234,6 +236,15 @@ function calculateUSSystemGrade(courseCreditPoints: string[], courseGradePoints:
         courseDetails.push('2');
         pdfBody.push(courseDetails)
         break;
+      case 'E':
+        totalCreditCount += courseGradePoints[index] * 2;
+        totalGradeCount += courseGradePoints[index];
+        courseDetails.push(courseCodes[index]);
+        courseDetails.push(courseGradePoints[index].toString());
+        courseDetails.push(grade);
+        courseDetails.push('2');
+        pdfBody.push(courseDetails)
+        break;
       case 'CLR':
         courseDetails.push(courseCodes[index]);
         courseDetails.push(courseGradePoints[index].toString());
@@ -274,13 +285,10 @@ function calculateUSSystemGrade(courseCreditPoints: string[], courseGradePoints:
 function handleDownload() {
   const doc = new jsPDF()
 
-  // It can parse html:
-  // <table id="my-table"><!-- ... --></table>
   doc.text(`Cumulative GPA: ${usGrade.value}`, 14, 10)
 
   autoTable(doc, { html: '#my-table' })
 
-  // Or use javascript directly:
   autoTable(doc, {
     head: [['Course Code', 'Credits', 'Grade', 'Grade Points']],
     body: pdfBody,
