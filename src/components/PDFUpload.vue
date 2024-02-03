@@ -47,7 +47,7 @@
     </div>
     <div v-else-if="error" class="mt-4">
       Not able to read the pdf <br>
-      Please check the file
+      Please check the file uploaded
     </div>
   </div>
 </template>
@@ -113,7 +113,7 @@ async function handleFileUpload(event: any) {
       const courseGradePoints: number[] = [];
       const courseCreditPoints: string[] = [];
       const courseType: string[] = [];
-      const courseCodeRegex = /^.*[A-Z]\d+[T]?$/gm;
+      const courseCodeRegex = /^.*\s\s[A-Z]\d+[T]?$/gm;
       const courseCreditRegex = /^[A,B,C,D,E,W][-]?$/gm;
       let isNotPending = true;
       const repeatedCourses: string[] = [];
@@ -155,7 +155,11 @@ async function handleFileUpload(event: any) {
         }
       }); 
       
-      calculateUSSystemGrade(courseCreditPoints, courseGradePoints, repeatedCourses, courseCodes)
+      if (courseCodes.length > 0) {
+        calculateUSSystemGrade(courseCreditPoints, courseGradePoints, repeatedCourses, courseCodes)
+      } else {
+        error.value = true;
+      }
     
     } catch (error) {
       console.error('Error reading PDF:', error);
