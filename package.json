@@ -26,7 +26,6 @@
     "cors": "^2.8.5",
     "express": "^4.18.2",
     "express-fileupload": "^1.4.3",
-    "jspdf": "^2.5.1",
     "jspdf-autotable": "^3.8.1",
     "pdf-parse": "^1.1.1",
     "pdfjs-dist": "^4.0.379",
@@ -34,7 +33,7 @@
     "vue": "^3.3.11",
     "vue-router": "^4.2.5"
   },
-  "devDependencies": {
+  "devDependen`c`ies": {
     "@babel/plugin-syntax-top-level-await": "^7.14.5",
     "@rushstack/eslint-patch": "^1.3.3",
     "@tsconfig/node18": "^18.2.2",
